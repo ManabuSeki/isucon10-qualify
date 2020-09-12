@@ -303,7 +303,10 @@ func initialize(c echo.Context) error {
 			mySQLConnectionData.DBName,
 			sqlFile,
 		)
-		if err := exec.Command("bash", "-c", cmdStr).Run(); err != nil {
+		cmd := exec.Command("bash", "-c", cmdStr)
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stderr
+		if err := cmd.Run(); err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
