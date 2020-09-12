@@ -26,7 +26,7 @@ INSERT INTO `isuumo`.`low_priced_estate` SELECT * FROM `isuumo`.`estate` ORDER B
 CREATE TABLE IF NOT EXISTS `isuumo`.`rent_range_id_cache` (
   `id`   INTEGER NOT NULL,
   `count` INTEGER NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 0, COUNT(*) FROM `isuumo`.`estate` WHERE rent < 50000;
 INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 1, COUNT(*) FROM `isuumo`.`estate` WHERE 50000 <= rent AND rent < 100000;
