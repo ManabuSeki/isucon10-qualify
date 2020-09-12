@@ -818,10 +818,12 @@ func searchEstates(c echo.Context) error {
 	limitOffset := " ORDER BY popularity DESC, id ASC LIMIT ? OFFSET ?"
 
 	var res EstateSearchResponse
+	c.Logger().Infof("search condition %s", searchCondition)
 	switch searchCondition {
 	case "rent < ?",
 		"rent >= ? AND rent < ?",
 		"rent >= ?":
+		c.Logger().Info("cache!!!!")
 		err = db.Get(&res.Count, "SELECT `count` FROM rent_range_id_cache WHERE id = ?", c.QueryParam("rentRangeId"))
 	default:
 		err = db.Get(&res.Count, countQuery+searchCondition, params...)
