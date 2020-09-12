@@ -1,4 +1,4 @@
-ALTER TABLE `isuumo`.`estate` ADD INDEX `popularity_idx` (`popularity`),
+ALTER TABLE `isuumo`.`estate` ADD INDEX `popularity_idx` (`popularity`);
 CREATE TABLE IF NOT EXISTS `isuumo`.`geotable` (
   `id`   INTEGER NOT NULL,
   `geom` geometry NOT NULL,
