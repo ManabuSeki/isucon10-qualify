@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS `isuumo`.`estate_rent_range` (
   `popularity` INTEGER  NOT NULL,
   PRIMARY KEY (`estate_id`)
 ) ENGINE=InnoDB;
-INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 0 FROM `isuumo`.`estate` WHERE rent < 50000;
-INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 1 FROM `isuumo`.`estate` WHERE 50000 <= rent AND rent < 100000;
-INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 2 FROM `isuumo`.`estate` WHERE 100000 <= rent AND rent < 150000;
-INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 3 FROM `isuumo`.`estate` WHERE 150000 <= rent;
+INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 0, popularity FROM `isuumo`.`estate` WHERE rent < 50000;
+INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 1, popularity FROM `isuumo`.`estate` WHERE 50000 <= rent AND rent < 100000;
+INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 2, popularity FROM `isuumo`.`estate` WHERE 100000 <= rent AND rent < 150000;
+INSERT INTO `isuumo`.`estate_rent_range` SELECT id, 3, popularity FROM `isuumo`.`estate` WHERE 150000 <= rent;
 ALTER TABLE `isuumo`.`estate_rent_range` ADD INDEX `rent_range_id_popularity_idx` (`rent_range_id`, `popularity`);
 
 
