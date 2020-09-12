@@ -865,7 +865,7 @@ func searchEstateNazotte(c echo.Context) error {
 
 	estatesInPolygon := []Estate{}
 
-	query := fmt.Sprintf("SELECT * FROM estate JOIN geotable ON estate.id = geotable.id WHERE ST_Contains(ST_PolygonFromText(%s), geotable.geom) ORDER BY popularity DESC, estate.id ASC LIMIT ?", coordinates.coordinatesToText())
+	query := fmt.Sprintf("SELECT estate.* FROM estate JOIN geotable ON estate.id = geotable.id WHERE ST_Contains(ST_PolygonFromText(%s), geotable.geom) ORDER BY popularity DESC, estate.id ASC LIMIT ?", coordinates.coordinatesToText())
 	err = db.Select(&estatesInPolygon, query, NazotteLimit)
 	if err != nil {
 		c.Echo().Logger.Errorf("db access is failed on executing validate if estate is in polygon : %v", err)
