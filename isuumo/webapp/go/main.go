@@ -688,6 +688,16 @@ func postEstate(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
+	_, err = tx.Exec("DELETE FROM low_priced_estate")
+	if err != nil {
+		c.Logger().Errorf("failed to delete low_priced_estate: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	_, err = tx.Exec("INSERT INTO low_priced_estate SELECT * FROM estate ORDER BY rent ASC, id ASC LIMIT ?", Limit)
+	if err != nil {
+		c.Logger().Errorf("failed to insert low_priced_estate: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	if err := tx.Commit(); err != nil {
 		c.Logger().Errorf("failed to commit tx: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -804,7 +814,7 @@ func searchEstates(c echo.Context) error {
 
 func getLowPricedEstate(c echo.Context) error {
 	estates := make([]Estate, 0, Limit)
-	query := `SELECT * FROM estate ORDER BY rent ASC, id ASC LIMIT ?`
+	query := `SELECT * FROM low_priced_estate ORDER BY rent ASC, id ASC LIMIT ?`
 	err := db.Select(&estates, query, Limit)
 	if err != nil {
 		if err == sql.ErrNoRows {
