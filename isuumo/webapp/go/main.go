@@ -698,6 +698,34 @@ func postEstate(c echo.Context) error {
 		c.Logger().Errorf("failed to insert low_priced_estate: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	_, err = tx.Exec("DELETE FROM rent_range_id_cache")
+	if err != nil {
+		c.Logger().Errorf("failed to delete rent_range_id_cache: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	_, err = tx.Exec("INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 0, COUNT(*) FROM `isuumo`.`estate` WHERE rent < 50000")
+	if err != nil {
+		c.Logger().Errorf("failed to insert rent_range_id_cache: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	_, err = tx.Exec("INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 1, COUNT(*) FROM `isuumo`.`estate` WHERE 50000 <= rent AND rent < 100000")
+	if err != nil {
+		c.Logger().Errorf("failed to insert rent_range_id_cache: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	_, err = tx.Exec("INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 2, COUNT(*) FROM `isuumo`.`estate` WHERE 100000 <= rent AND rent < 150000")
+	if err != nil {
+		c.Logger().Errorf("failed to insert rent_range_id_cache: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	_, err = tx.Exec("INSERT INTO `isuumo`.`rent_range_id_cache` SELECT 3, COUNT(*) FROM `isuumo`.`estate` WHERE 150000 <= rent")
+	if err != nil {
+		c.Logger().Errorf("failed to insert rent_range_id_cache: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
 	if err := tx.Commit(); err != nil {
 		c.Logger().Errorf("failed to commit tx: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
@@ -790,7 +818,14 @@ func searchEstates(c echo.Context) error {
 	limitOffset := " ORDER BY popularity DESC, id ASC LIMIT ? OFFSET ?"
 
 	var res EstateSearchResponse
-	err = db.Get(&res.Count, countQuery+searchCondition, params...)
+	switch searchCondition {
+	case "rent < ?",
+		"rent >= ? AND rent < ?",
+		"rent >= ?":
+		err = db.Get(&res.Count, "SELECT `count` FROM rent_range_id_cache WHERE id = ?", c.QueryParam("rentRangeId"))
+	default:
+		err = db.Get(&res.Count, countQuery+searchCondition, params...)
+	}
 	if err != nil {
 		c.Logger().Errorf("searchEstates DB execution error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
