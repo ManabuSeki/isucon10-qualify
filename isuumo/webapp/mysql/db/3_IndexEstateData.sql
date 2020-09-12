@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS `isuumo`.`geotable` (
   SPATIAL KEY `geom` (`geom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT INTO `isuumo`.`geotable` SELECT `id`, ST_GeomFromText(CONCAT('POINT(', `longitude`, ' ', `latitude`, ')')) 
-FROM `issumo`.`estate`;
+FROM `isuumo`.`estate`;
 
